@@ -26,7 +26,7 @@ def tcp_handler(client_socket, addr):
             data = client_socket.recv(1024)
             if not data:
                 break
-            logging.info(f"[TCP] {addr}: {data.decode('utf-8')}")
+            logging.info(f"[TCP] {addr}: {data.decode('utf-8').replace('\n', ' ')}")
         logging.debug(f"[TCP] {addr}: Disconnected")
 
 def udp_handler(udp_socket):
