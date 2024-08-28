@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import logging.handlers
+import signal
 import socket
 import threading
 # import urllib3
@@ -39,19 +40,46 @@ def tcp_server_start():
     tcp_server.bind(('', PORT))
     tcp_server.listen(5)
     logging.info(f"[TCP] Server listening on port {PORT}")
-    while True:
-        client_socket, addr = tcp_server.accept()
-        t = threading.Thread(target=tcp_handler, args=(client_socket, addr))
-        t.start()
+    # while True:
+    #    client_socket, addr = tcp_server.accept()
+    #    t = threading.Thread(target=tcp_handler, args=(client_socket, addr))
+    #    t.start()
+    tcp_server.settimeout(1)
+    while not shutdown_event.is_set():
+        try:
+            client_socket, addr = tcp_server.accept()
+            t = threading.Thread(target=tcp_handler, args=(client_socket, addr))
+            t.start()
+        except socket.timeout:
+            continue
+    tcp_server.close()
+    logging.info(f"[TCP] Server on port {PORT} closed")
 
 def udp_server_start():
     udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_server.bind(('', PORT))
     logging.info(f"[UDP] Server listening on port {PORT}")
-    t = threading.Thread(target=udp_handler, args=(udp_server,))
-    t.start()
+    # t = threading.Thread(target=udp_handler, args=(udp_server,))
+    # t.start()
+    udp_server.settimeout(1)
+    while not shutdown_event.is_set():
+        try:
+            data, addr = udp_server.recvfrom(1024)
+            logging.info(f"[UDP] {addr}: {data.decode('utf-8').replace('\n', ' ')}")
+        except socket.timeout:
+            continue
+    udp_server.close()
+    logging.info(f"[UDP] Server on port {PORT} closed")
+
+shutdown_event = threading.Event()
+
+def signal_handler(sig, frame):
+    logging.info("Shutdown signal received, shutting down...")
+    shutdown_event.set()
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     tcp_thread = threading.Thread(target=tcp_server_start)
     udp_thread = threading.Thread(target=udp_server_start)
     tcp_thread.start()
