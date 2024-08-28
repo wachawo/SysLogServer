@@ -7,6 +7,7 @@ import threading
 # import urllib3
 
 PORT = 514
+EVENT = threading.Event()
 
 LOGGING = {
     'handlers': [
@@ -45,7 +46,7 @@ def tcp_server_start():
     #    t = threading.Thread(target=tcp_handler, args=(client_socket, addr))
     #    t.start()
     tcp_server.settimeout(1)
-    while not shutdown_event.is_set():
+    while not EVENT.is_set():
         try:
             client_socket, addr = tcp_server.accept()
             t = threading.Thread(target=tcp_handler, args=(client_socket, addr))
@@ -62,7 +63,7 @@ def udp_server_start():
     # t = threading.Thread(target=udp_handler, args=(udp_server,))
     # t.start()
     udp_server.settimeout(1)
-    while not shutdown_event.is_set():
+    while not EVENT.is_set():
         try:
             data, addr = udp_server.recvfrom(1024)
             logging.info(f"[UDP] {addr}: {data.decode('utf-8').replace('\n', ' ')}")
@@ -71,11 +72,9 @@ def udp_server_start():
     udp_server.close()
     logging.info(f"[UDP] Server on port {PORT} closed")
 
-shutdown_event = threading.Event()
-
 def signal_handler(sig, frame):
     logging.info("Shutdown signal received, shutting down...")
-    shutdown_event.set()
+    EVENT.set()
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
