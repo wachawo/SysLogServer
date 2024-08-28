@@ -32,7 +32,7 @@ def tcp_handler(client_socket, addr):
 def udp_handler(udp_socket):
     while True:
         data, addr = udp_socket.recvfrom(1024)
-        logging.info(f"[UDP] {addr}: {data.decode('utf-8')}")
+        logging.info(f"[UDP] {addr}: {data.decode('utf-8').replace('\n', ' ')}")
 
 def tcp_server_start():
     tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
