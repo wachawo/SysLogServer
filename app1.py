@@ -85,3 +85,4 @@ if __name__ == "__main__":
     udp_thread.start()
     tcp_thread.join()
     udp_thread.join()
+    logging.info("Shutdown complete")
