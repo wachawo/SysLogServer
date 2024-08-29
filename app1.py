@@ -82,7 +82,7 @@ def signal_handler(sig, frame):
 
 class ReloadHandler(FileSystemEventHandler):
     def __init__(self, shutdown_event):
-        self.shutdown_event = shutdown_event
+        self.shutdown_event = EVENT
 
     def on_modified(self, event):
         # if event.src_path == os.path.abspath(__file__):
@@ -92,14 +92,14 @@ class ReloadHandler(FileSystemEventHandler):
 
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
-    ob = Observer()
-    watch_directory = os.path.abspath('.')
-    if not os.path.exists(watch_directory):
-        logging.error(f"Directory does not exist: {watch_directory}")
+    obsrv = Observer()
+    path = os.path.abspath('.')
+    if not os.path.exists(path):
+        logging.error(f"Directory does not exist: {path}")
         return None
-    ob.schedule(event_handler, path=watch_directory, recursive=False)
-    ob.start()
-    return ob
+    obsrv.schedule(event_handler, path=path, recursive=False)
+    obsrv.start()
+    return obsrv
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
