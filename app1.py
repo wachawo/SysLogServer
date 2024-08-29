@@ -22,6 +22,9 @@ LOGGING = {
     'level': logging.DEBUG,
     'datefmt': '%Y-%m-%d %H:%M:%S',
 }
+# Create logs directory
+if not os.path.exists('logs'):
+    os.makedirs('logs')
 logging.basicConfig(**LOGGING)
 # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -102,8 +105,6 @@ def start_file_watcher():
     return obsrv
 
 if __name__ == "__main__":
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     observer = start_file_watcher()
