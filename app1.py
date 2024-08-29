@@ -26,6 +26,7 @@ LOGGING = {
 if not os.path.exists('logs'):
     os.makedirs('logs')
 logging.basicConfig(**LOGGING)
+logging.getLogger('watchdog.observers.inotify_buffer').setLevel(logging.WARNING)
 # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def tcp_handler(client_socket, addr):
