@@ -114,8 +114,8 @@ def start_file_watcher():
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    obsrv = start_file_watcher()
-    if obsrv:
+    ob_server = start_file_watcher()
+    if ob_server:
         try:
             tcp_thread = threading.Thread(target=tcp_server_start)
             udp_thread = threading.Thread(target=udp_server_start)
@@ -124,8 +124,8 @@ if __name__ == "__main__":
             tcp_thread.join()
             udp_thread.join()
         finally:
-            obsrv.stop()
-            obsrv.join()
+            ob_server.stop()
+            ob_server.join()
         logging.info("Shutdown complete")
     else:
         logging.error("Failed to start file watcher")
