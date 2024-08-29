@@ -85,14 +85,15 @@ class ReloadHandler(FileSystemEventHandler):
         self.shutdown_event = shutdown_event
 
     def on_modified(self, event):
-        if event.src_path == os.path.abspath(__file__):
+        # if event.src_path == os.path.abspath(__file__):
+        if event.src_path.endswith('.py'):
             logging.info("File modified, restarting server...")
             self.shutdown_event.set()
 
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
     obsrv = Observer()
-    obsrv.schedule(event_handler, path='*.py', recursive=False)
+    obsrv.schedule(event_handler, path='*.', recursive=False)
     obsrv.start()
     return obsrv
 
