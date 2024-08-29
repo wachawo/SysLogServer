@@ -88,11 +88,17 @@ class ReloadHandler(FileSystemEventHandler):
     def __init__(self, shutdown_event):
         self.shutdown_event = EVENT
 
+    def restart(self):
+        logging.info("Restarting server...")
+        python = sys.executable
+        os.execl(python, python, *sys.argv)
+
     def on_modified(self, event):
-        # if event.src_path == os.path.abspath(__file__):
         if event.src_path.endswith('.py'):
-            logging.info("File modified, restarting server...")
-            self.shutdown_event.set()
+            logging.info(f"Modified: {event.src_path} Restarting server...")
+            self.restart()
+
+
 
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
@@ -108,15 +114,18 @@ def start_file_watcher():
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    observer = start_file_watcher()
-    try:
-        tcp_thread = threading.Thread(target=tcp_server_start)
-        udp_thread = threading.Thread(target=udp_server_start)
-        tcp_thread.start()
-        udp_thread.start()
-        tcp_thread.join()
-        udp_thread.join()
-    finally:
-        observer.stop()
-        observer.join()
-    logging.info("Shutdown complete")
+    obsrv = start_file_watcher()
+    if obsrv:
+        try:
+            tcp_thread = threading.Thread(target=tcp_server_start)
+            udp_thread = threading.Thread(target=udp_server_start)
+            tcp_thread.start()
+            udp_thread.start()
+            tcp_thread.join()
+            udp_thread.join()
+        finally:
+            obsrv.stop()
+            obsrv.join()
+        logging.info("Shutdown complete")
+    else:
+        logging.error("Failed to start file watcher")
