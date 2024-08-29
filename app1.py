@@ -92,14 +92,6 @@ class ReloadHandler(FileSystemEventHandler):
 
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
-    observer = Observer()
-    observer.schedule(event_handler, path='*.', recursive=False)
-    observer.start()
-    return observer
-
-
-def start_file_watcher():
-    event_handler = ReloadHandler(EVENT)
     ob = Observer()
     watch_directory = os.path.abspath('.')
     if not os.path.exists(watch_directory):
