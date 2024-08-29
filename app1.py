@@ -22,7 +22,6 @@ LOGGING = {
     'level': logging.DEBUG,
     'datefmt': '%Y-%m-%d %H:%M:%S',
 }
-# Create logs directory
 if not os.path.exists('logs'):
     os.makedirs('logs')
 logging.basicConfig(**LOGGING)
@@ -98,8 +97,6 @@ class ReloadHandler(FileSystemEventHandler):
         if event.src_path.endswith('.py'):
             logging.info(f"Modified: {event.src_path}")
             self.restart_server()
-
-
 
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
