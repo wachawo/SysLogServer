@@ -16,7 +16,7 @@ EVENT = threading.Event()
 LOGGING = {
     'handlers': [
         logging.StreamHandler(),
-        logging.handlers.RotatingFileHandler(filename='logs/app1.log', maxBytes=1024*1024*10, backupCount=3),
+        logging.handlers.RotatingFileHandler(filename='logs/app1.log', maxBytes=1024*1024*1024, backupCount=10),
     ],
     'format': '%(asctime)s.%(msecs)03d [%(levelname)s]: (%(name)s) %(message)s',
     'level': logging.DEBUG,
