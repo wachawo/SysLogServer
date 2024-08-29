@@ -81,7 +81,7 @@ def udp_server_start():
     logging.info(f"[UDP] Server on port {PORT} closed")
 
 def signal_handler(sig, frame):
-    logging.info("Shutdown signal received, shutting down...")
+    logging.info("Shutdown signal received")
     EVENT.set()
 
 class ReloadHandler(FileSystemEventHandler):
@@ -106,7 +106,7 @@ def start_file_watcher():
     obsrv = Observer()
     path = os.path.abspath('.')
     if not os.path.exists(path):
-        logging.error(f"Directory does not exist: {path}")
+        logging.error(f"Path {path} does not exist")
         return None
     obsrv.schedule(event_handler, path=path, recursive=False)
     obsrv.start()
