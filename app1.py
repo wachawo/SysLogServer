@@ -102,6 +102,8 @@ def start_file_watcher():
     return obsrv
 
 if __name__ == "__main__":
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     observer = start_file_watcher()
