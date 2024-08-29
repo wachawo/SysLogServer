@@ -92,10 +92,22 @@ class ReloadHandler(FileSystemEventHandler):
 
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
-    obsrv = Observer()
-    obsrv.schedule(event_handler, path='*.', recursive=False)
-    obsrv.start()
-    return obsrv
+    observer = Observer()
+    observer.schedule(event_handler, path='*.', recursive=False)
+    observer.start()
+    return observer
+
+
+def start_file_watcher():
+    event_handler = ReloadHandler(EVENT)
+    ob = Observer()
+    watch_directory = os.path.abspath('.')
+    if not os.path.exists(watch_directory):
+        logging.error(f"Directory does not exist: {watch_directory}")
+        return None
+    ob.schedule(event_handler, path=watch_directory, recursive=False)
+    ob.start()
+    return ob
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
