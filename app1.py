@@ -4,6 +4,10 @@ import logging.handlers
 import signal
 import socket
 import threading
+import os
+import sys
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 # import urllib3
 
 PORT = 514
@@ -76,13 +80,34 @@ def signal_handler(sig, frame):
     logging.info("Shutdown signal received, shutting down...")
     EVENT.set()
 
+class ReloadHandler(FileSystemEventHandler):
+    def __init__(self, shutdown_event):
+        self.shutdown_event = shutdown_event
+
+    def on_modified(self, event):
+        if event.src_path == os.path.abspath(__file__):
+            logging.info("File modified, restarting server...")
+            self.shutdown_event.set()
+
+def start_file_watcher():
+    event_handler = ReloadHandler(EVENT)
+    obsrv = Observer()
+    obsrv.schedule(event_handler, path='.', recursive=False)
+    obsrv.start()
+    return obsrv
+
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    tcp_thread = threading.Thread(target=tcp_server_start)
-    udp_thread = threading.Thread(target=udp_server_start)
-    tcp_thread.start()
-    udp_thread.start()
-    tcp_thread.join()
-    udp_thread.join()
+    observer = start_file_watcher()
+    try:
+        tcp_thread = threading.Thread(target=tcp_server_start)
+        udp_thread = threading.Thread(target=udp_server_start)
+        tcp_thread.start()
+        udp_thread.start()
+        tcp_thread.join()
+        udp_thread.join()
+    finally:
+        observer.stop()
+        observer.join()
     logging.info("Shutdown complete")
