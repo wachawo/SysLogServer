@@ -88,15 +88,16 @@ class ReloadHandler(FileSystemEventHandler):
     def __init__(self, shutdown_event):
         self.shutdown_event = EVENT
 
-    def restart(self):
+    @staticmethod
+    def restart_server():
         logging.info("Restarting server...")
         python = sys.executable
         os.execl(python, python, *sys.argv)
 
     def on_modified(self, event):
         if event.src_path.endswith('.py'):
-            logging.info(f"Modified: {event.src_path} Restarting server...")
-            self.restart()
+            logging.info(f"Modified: {event.src_path}")
+            self.restart_server()
 
 
 
