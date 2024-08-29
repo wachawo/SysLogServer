@@ -92,7 +92,7 @@ class ReloadHandler(FileSystemEventHandler):
 def start_file_watcher():
     event_handler = ReloadHandler(EVENT)
     obsrv = Observer()
-    obsrv.schedule(event_handler, path='.', recursive=False)
+    obsrv.schedule(event_handler, path='*.py', recursive=False)
     obsrv.start()
     return obsrv
 
