@@ -11,11 +11,12 @@ from watchdog.events import FileSystemEventHandler
 
 PORT = 514
 EVENT = threading.Event()
+LOGPATH = 'logs'
 
 LOGGING = {
     'handlers': [
         logging.StreamHandler(),
-        logging.handlers.RotatingFileHandler(filename='logs/app1.log', maxBytes=1024*1024*1024, backupCount=10),
+        logging.handlers.RotatingFileHandler(filename=f'{LOGPATH}/app1.log', maxBytes=1024*1024*1024, backupCount=10),
     ],
     'format': '%(asctime)s.%(msecs)03d [%(levelname)s]: (%(name)s) %(message)s',
     'level': logging.DEBUG,
@@ -109,6 +110,9 @@ def start_file_watcher():
     return obsrv
 
 if __name__ == "__main__":
+    # Check and create the 'logs' directory if it doesn't exist
+    if not os.path.exists(LOGPATH):
+        os.makedirs(LOGPATH)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     ob_server = start_file_watcher()
