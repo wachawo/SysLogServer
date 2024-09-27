@@ -1,1 +1,1 @@
-# TCP \ UDP SysLog Server
+# Example TCP \ UDP SysLog Server
