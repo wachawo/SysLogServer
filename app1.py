@@ -8,7 +8,6 @@ import os
 import sys
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-# import urllib3
 
 PORT = 514
 EVENT = threading.Event()
